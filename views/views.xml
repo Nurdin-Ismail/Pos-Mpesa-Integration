@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="view_pos_config_settings" model="ir.ui.view">
+    <field name="name">pos.config.settings.view.form.inherit.mpesa</field>
+    <field name="model">res.config.settings</field>
+    <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form" />
+    <field name="arch" type="xml">
+      <!-- Place the MPesa configuration section right after the Payment section -->
+      <xpath expr="//block[@id='pos_payment_section']" position="after">
+        <block title="MPesa Configuration" id="mpesa_configuration_section"
+          invisible="pos_config_id != show_mpesa_config">
+          <div class="mt16 w-full">
+            <!-- <h2>MPesa Configuration</h2> -->
+            <div class="form-group o_form_field o_field_widget col-lg-8 mb-2">
+              <label for="mpesa_consumer_key">MPesa Consumer Key:</label>
+              <field name="mpesa_consumer_key" placeholder="Enter Consumer Key" />
+            </div>
+            <div class="form-group o_form_field o_field_widget col-lg-8 mb-2">
+              <label for="mpesa_consumer_secret">MPesa Consumer Secret:</label>
+              <field name="mpesa_consumer_secret" placeholder="Enter Consumer Secret" />
+            </div>
+            <div class="form-group o_form_field o_field_widget col-lg-8 mb-2">
+              <label for="mpesa_passkey" class='mr-4'>MPesa Passkey:</label>
+              <field name="mpesa_passkey" placeholder="Enter Passkey" />
+            </div>
+            <div class="form-group o_form_field o_field_widget col-lg-5 mb-2">
+              <label for="mpesa_shortcode">MPesa Shortcode:</label>
+              <field name="mpesa_shortcode" placeholder="Enter Shortcode" />
+            </div>
+
+            <div class="form-group o_form_field o_field_widget col-lg-8 mb-2" invisible='1'>
+              <label for="show_mpesa_config"></label>
+              <field name="show_mpesa_config"  />
+            </div>
+          </div>
+        </block>
+      </xpath>
+    </field>
+  </record>
+  <record id="view_pos_order_form_inherit" model="ir.ui.view">
+    <field name="name">pos.order.form.inherit.mpesa</field>
+    <field name="model">pos.order</field>
+    <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+    <field name="arch" type="xml">
+        <xpath expr="//page[@name='payments']/field[@name='payment_ids']/tree/field[@name='amount']" position="before">
+            <field name="mpesa_receipt_number" />
+        </xpath>
+<!--      Add a button to query transaction status  transaction_status-->
+
+    </field>
+  </record>
+
+</odoo>
