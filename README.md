@@ -1,83 +1,120 @@
-# POS MPesa Integration for Odoo
+# Mpesa POS Integration for Odoo
+
+---
 
 ## Overview
-This module integrates MPesa payment processing with the Odoo Point of Sale (POS) system. It allows seamless transactions between the POS application and the MPesa payment gateway, providing real-time updates on payment statuses and receipt generation.
+This module integrates Mpesa payment functionality into Odoo's Point of Sale (POS) system. It enhances the payment process by enabling businesses to initiate Mpesa STK Push transactions directly from the POS interface and updates the user with the transaction status (**successful**, **canceled**, or **failed**).
+
+---
 
 ## Features
-- **STK Push Integration**: Initiate MPesa payments directly from the POS interface.
-- **Real-time Status Checks**: Query and receive real-time feedback on the payment status.
-- **Automatic Receipt Assignment**: Automatically associate MPesa receipts with POS orders.
-- **Retry Mechanism**: Implements a retry loop for handling transactions that are pending or processing.
-- **Secure Access**: Uses secure token-based authentication for API interactions.
-- **Configurable Parameters**: Business shortcode and passkey can be set via Odoo configuration.
+- **Mpesa Configuration in Settings**: Manage Mpesa API credentials and settings in the Odoo Configuration menu.
+- **Mpesa as a Payment Method**: Enable Mpesa as a payment method in the POS payment methods configuration.
+- **STK Push Integration**: Send Mpesa STK Push requests when a phone number is entered on the POS numpad.
+- **Real-Time Transaction Updates**: Receive and display updates on the transaction status within the POS interface.
+
+---
+
+## Requirements
+- **Odoo version**: 17
+- **Mpesa API**: Active Mpesa Daraja API account
+- **Internet**: Required for API communication
+
+---
 
 ## Installation
-1. **Clone this repository into your Odoo addons directory**:
+
+1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/yourusername/pos_mpesa_integration.git /path/to/odoo/addons/pos_mpesa_integration
-    ```
+   git clone <repository_url> /path/to/odoo/addons/mpesa_pos
+   ```
+2. **Restart Odoo Server**:
+   ```bash
+   python3 odoo/odoo-bin -c config/odoo.conf
+   ```
+3. **Activate the Module in Odoo**:
+   - Navigate to **Apps**.
+   - Search for "Mpesa POS Integration."
+   - Click **Install**.
 
-2. **Restart your Odoo server**:
+---
 
-    ```bash
-    ./odoo/odoo-bin -c /path/to/odoo.conf
-    ```
-3. **Navigate to Apps in your Odoo instance, search for "POS MPesa Integration," and install the module.**
+## Configuration
 
-**Configuration**
+### Step 1: Configure Mpesa API Parameters
+1. Navigate to **Settings > Pos Settings > Mpesa Configuration**.
+2. Fill in the following details:
+   - **Consumer Key**
+   - **Consumer Secret**
+   - **Shortcode**
+   - **Passkey**
+   - **Callback URL**
+3. Save the changes.
 
+### Step 2: Enable Mpesa in POS
+1. Go to **Point of Sale > Configuration > Payment Methods**.
+2. Create or edit a payment method:
+   - Set the name to **Mpesa**.
+   - Assign the Mpesa configuration parameters.
+3. Save the changes.
 
-***POS Configuration:***
+### Step 3: Assign Mpesa to POS Configurations
+1. Go to **Point of Sale > Configuration > Point of Sale**.
+2. Edit the POS configurations to include the Mpesa payment method.
+3. Save the configuration.
 
-Assign the MPesa payment method to your POS sessions under Point of Sale > Configuration > Payment Methods.
+---
 
-![add](/static/description/add_mpesa.png)
+## Usage
 
+1. Open the **POS interface**.
+2. Select **Mpesa** as the payment method.
+3. Enter the customer’s **phone number** using the numpad.
+4. Confirm to send the **STK Push request** to the customer’s phone.
+5. Monitor the status of the transaction in real time:
+   - **Success**: The transaction is completed and logged.
+   - **Cancelled**: The user canceled the transaction.
+   - **Failed**: An error occurred during the transaction.
 
-***MPesa API Setup:***
+---
 
-1. Ensure that your MPesa API credentials (consumer key, consumer secret, passkey, and shortcode) are available.
-2. Go to Settings > POint Of Sale Settings > MPesa Configuration to input these credentials.
+## Development
 
-![Configuration](/static/description/confuguration.png)
+### Key Components
 
+- **Mpesa API Integration**:
+  - Handles authentication, STK Push requests, and callbacks.
+- **POS Frontend Customization**:
+  - Adds phone number input and transaction status updates.
+- **Configuration Management**:
+  - Stores and validates Mpesa credentials in `res.config.settings`.
 
-***Usage***
-1. Open the POS session and select items for purchase.
-2. Choose MPesa as the payment method.
-3. Enter the customer's phone number and confirm the payment.
-4. The system will initiate an STK Push to the customer's device.
-5. Upon success, the transaction will be logged, and a receipt number will be linked to the order.
+### Files and Directories
+- `controllers/`: Contains custom controllers for handling API callbacks.
+- `models/`: Defines Mpesa-related models and business logic.
+- `views/`: Custom views for Mpesa configuration and POS interface enhancements.
 
+---
 
-**Key Routes**
+## Testing
 
-Initiate Payment:
+1. Ensure the **Callback URL** is accessible (use ngrok or port forwarding during development).
+2. Test the following scenarios:
+   - **Successful transaction**.
+   - **Canceled transaction**.
+   - **Failed transaction** due to invalid credentials or network issues.
 
+---
 
-    @http.route('/mpesa/stk_push',type='json', auth='public', methods=['POST'])
+## Troubleshooting
 
-Query Payment Status:
+- **Callback Issues**:
+  - Verify the Callback URL is reachable from Mpesa servers.
+  - Check Odoo logs for detailed error messages.
 
+- **STK Push Failures**:
+  - Confirm the Mpesa API credentials are correctly configured.
+  - Ensure the phone number entered is valid and registered with Mpesa.
 
-    @http.route('/mpesa/query', type='json', auth='public', methods=['POST'])
+---
 
-
-**Technical Details**
-
-**Dependencies:**
-
-requests for handling HTTP requests.
-
-Odoo's native HTTP controller for managing API endpoints.
-
-***Authentication:***
-
-1. Utilizes token-based authentication for secure MPesa API interactions.
-2. Retry Logic: The module includes a retry mechanism for querying payment statuses.
-
-**Error Handling**
-1. Logs are written to the Odoo log file for troubleshooting.
-2. Common errors such as expired tokens and connection issues are handled gracefully, with informative messages logged.
-
-# Pos-Mpesa-Integration
